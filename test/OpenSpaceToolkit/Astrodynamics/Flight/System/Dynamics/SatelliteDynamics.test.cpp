@@ -208,15 +208,79 @@ TEST (OpenSpaceToolkit_Astrodynamics_Flight_System_Dynamics_SatelliteDynamics, E
 
         EXPECT_TRUE(satelliteDynamics == satelliteDynamics_0) ;
 
-        // Test for different satellite system
-        const Composite satelliteGeometry_1(Cuboid({ 0.0, 0.0, 0.0 }, { Vector3d { 1.0, 0.0, 0.0 }, Vector3d { 0.0, 1.0, 0.0 }, Vector3d { 0.0, 0.0, 1.0 } }, { 1.0, 2.0, 3.0 })) ;
-        const SatelliteSystem satelliteSystem_1 = { Mass(90.0, Mass::Unit::Kilogram), satelliteGeometry_1, Matrix3d::Identity(), 0.8, 2.2 } ;
-        const SatelliteDynamics satelliteDynamics_1 = { defaultEnvironment, satelliteSystem_1 } ;
+    }
 
-        EXPECT_FALSE(satelliteDynamics == satelliteDynamics_1) ;
+    {
+        
+        // Create environments at different instants
+        const Instant instant_0 = Instant::DateTime(DateTime(2020,1,1,0,0,0), Scale::UTC) ;
+        const Instant instant_1 = Instant::DateTime(DateTime(2030,1,1,0,0,0), Scale::UTC) ;
+        
+        const Array<Shared<Object>> objects = 
+        {
+            std::make_shared<Earth>(Earth::Default())
+        } ;
+
+        const Environment environment_0 = Environment(instant_0, objects) ;
+        const Environment environment_1 = Environment(instant_1, objects) ;
+
+        const Composite satelliteGeometry(Cuboid({ 0.0, 0.0, 0.0 }, { Vector3d { 1.0, 0.0, 0.0 }, Vector3d { 0.0, 1.0, 0.0 }, Vector3d { 0.0, 0.0, 1.0 } }, { 1.0, 2.0, 3.0 })) ;
+        const SatelliteSystem satelliteSystem = { Mass(100.0, Mass::Unit::Kilogram), satelliteGeometry, Matrix3d::Identity(), 0.8, 2.2 } ;
+
+        const SatelliteDynamics satelliteDynamics_0 = { environment_0, satelliteSystem } ;
+        const SatelliteDynamics satelliteDynamics_1 = { environment_1, satelliteSystem } ;
+
+        EXPECT_FALSE(satelliteDynamics_0 == satelliteDynamics_1) ;
 
     }
 
+    {
+
+        // Create environments with different objects
+        const Instant instant = Instant::DateTime(DateTime(2020,1,1,0,0,0), Scale::UTC) ;
+        
+        const Array<Shared<Object>> objects_0 = 
+        {
+            std::make_shared<Earth>(Earth::Default())
+        } ;
+
+        const Array<Shared<Object>> objects_1 = 
+        {
+            std::make_shared<Sun>(Sun::Default())
+        } ;
+
+        const Environment environment_0 = Environment(instant, objects_0) ;
+        const Environment environment_1 = Environment(instant, objects_1) ;
+
+        const Composite satelliteGeometry(Cuboid({ 0.0, 0.0, 0.0 }, { Vector3d { 1.0, 0.0, 0.0 }, Vector3d { 0.0, 1.0, 0.0 }, Vector3d { 0.0, 0.0, 1.0 } }, { 1.0, 2.0, 3.0 })) ;
+        const SatelliteSystem satelliteSystem = { Mass(100.0, Mass::Unit::Kilogram), satelliteGeometry, Matrix3d::Identity(), 0.8, 2.2 } ;
+
+        const SatelliteDynamics satelliteDynamics_0 = { environment_0, satelliteSystem } ;
+        const SatelliteDynamics satelliteDynamics_1 = { environment_1, satelliteSystem } ;
+
+        EXPECT_FALSE(satelliteDynamics_0 == satelliteDynamics_1) ;
+
+    }
+
+    {
+
+        // Create different satellite systems
+        const Environment defaultEnvironment = Environment::Default() ;
+        const Shared<const Frame> gcrfSPtr = Frame::GCRF() ;
+
+        const Composite satelliteGeometry_0(Cuboid({ 0.0, 0.0, 0.0 }, { Vector3d { 1.0, 0.0, 0.0 }, Vector3d { 0.0, 1.0, 0.0 }, Vector3d { 0.0, 0.0, 1.0 } }, { 1.0, 2.0, 3.0 })) ;
+        const SatelliteSystem satelliteSystem_0 = { Mass(100.0, Mass::Unit::Kilogram), satelliteGeometry_0, Matrix3d::Identity(), 0.8, 2.2 } ;
+     
+        const Composite satelliteGeometry_1(Cuboid({ 0.0, 0.0, 0.0 }, { Vector3d { 1.0, 0.0, 0.0 }, Vector3d { 0.0, 1.0, 0.0 }, Vector3d { 0.0, 0.0, 1.0 } }, { 1.0, 2.0, 3.0 })) ;
+        const SatelliteSystem satelliteSystem_1 = { Mass(90.0, Mass::Unit::Kilogram), satelliteGeometry_1, Matrix3d::Identity(), 0.8, 2.2 } ;
+        
+        const SatelliteDynamics satelliteDynamics_0 = { defaultEnvironment, satelliteSystem_0 } ;
+        const SatelliteDynamics satelliteDynamics_1 = { defaultEnvironment, satelliteSystem_1 } ;
+
+        EXPECT_FALSE(satelliteDynamics_0 == satelliteDynamics_1) ;
+
+    }
+    
 }
 
 TEST (OpenSpaceToolkit_Astrodynamics_Flight_System_Dynamics_SatelliteDynamics, NotEqualToOperator)
